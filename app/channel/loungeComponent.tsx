@@ -25,11 +25,12 @@ import {
   isAudioInputReadyState,
 } from "@/lib/context";
 import { CHANNEL_MAPPINGS } from "@/lib/roomInfo";
+import MyVideo from "./myVideo";
 import { validSkywayToken } from "@/lib/skyway";
 
 type MemberInfo = { memberId: string; memberName: string };
 
-export default function viewComponent() {
+export default function DynamicComponent() {
   const [skywayToken, setSkywayToken] = useRecoilState(skywayTokenState);
   const [skywayJwtForToken, setSkywayJwtForToken] = useRecoilState(
     skywayJwtForTokenState
@@ -47,7 +48,7 @@ export default function viewComponent() {
   let mememe: LocalPerson;
 
   useLayoutEffect(() => {
-    setMyName("aoi");
+    setMyName("faker.person.lastName()");
     if (!validSkywayToken(skywayJwtForToken)) {
       setSkywayToken("");
       setSkywayJwtForToken("");
@@ -100,6 +101,7 @@ export default function viewComponent() {
     });
 
     myChannel.onMemberJoined.add((event: MemberJoinedEvent) => {
+      
       setMemberList((prev) => [
         ...prev,
         { memberId: event.member.id, memberName: event.member.metadata || "" },
@@ -117,7 +119,7 @@ export default function viewComponent() {
 
   const publishVideoStream = async () => {
     const avatarCanvas = myVideoRef.current
-      ?.getElementsByClassName("refAvatarCanvas")
+      ?.getElementsByClassName("w-canvas h-canvas")
       .item(0) as HTMLCanvasElement;
     if (avatarCanvas) {
       const myVideoInputStream: LocalVideoStream = new LocalVideoStream(
@@ -206,7 +208,7 @@ export default function viewComponent() {
         <section className={`w-[calc(100%-theme(width.canvas))]`}>
           <div className="flex flex-col text-center w-full mb-10">
             <div className="flex flex-col text-center w-full mb-10">
-              <h2 className="text-senter text-indigo-500 tracking-widest font-medium title-font mb-1">
+              <h2 className="text-s text-indigo-500 tracking-widest font-medium title-font mb-1">
                 参加チャンネル名
               </h2>
               <h1 className="text-4xl font-medium title-font text-gray-900">
@@ -279,7 +281,9 @@ export default function viewComponent() {
         </section>
       </div>
 
-
+      <section className="absolute top-0 right-0 m-2">
+        <MyVideo ref={myVideoRef} myName={myName} />
+      </section>
     </>
   );
 }
