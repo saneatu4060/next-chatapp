@@ -54,8 +54,15 @@ export default function Home() {
     if (!skywayToken) {
       return toast.error("skywayを利用するTokenがありません");
     }
-    setMyChannelName(channelName);
-    router.push(`/channel/`);
+    if(channelName=="通常"){
+      setMyChannelName(channelName);
+      router.push(`/channel/`);
+    }
+    if(channelName=="提案システム"){
+      setMyChannelName(channelName);
+      router.push(`/channel_2/`);
+    }
+
   };
 
 
@@ -83,8 +90,9 @@ export default function Home() {
                       </span>
                     </button>
                     
+                    
                   );
-                })
+                },)
               ) : (
                 <button
                   className="text-white bg-red-500 border-0 py-2 px-8 focus:outline-none hover:bg-red-600 rounded text-lg w-full"

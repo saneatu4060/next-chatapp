@@ -205,7 +205,6 @@ export default function DynamicComponent() {
   return (
     <>
       <div className="container">
-        <section className={`w-[calc(100%-theme(width.canvas))]`}>
           <div className="flex flex-col text-center w-full mb-10">
             <div className="flex flex-col text-center w-full mb-10">
               <h2 className="text-s text-indigo-500 tracking-widest font-medium title-font mb-1">
@@ -244,6 +243,7 @@ export default function DynamicComponent() {
                   }
                 >
                   {(isVideoInputReady && isAudioInputReady) ? (
+                    
                     <p className="text-white text-lg p-2">
                       チャンネルに参加する
                       <span className="block mt-1 text-sm pl-1 pb-2 text-white/80">
@@ -259,7 +259,6 @@ export default function DynamicComponent() {
               </div>
             )}
           </div>
-
           <div
             ref={memberListRef}
             className="grid grid-cols-2 md:grid-cols-3 gap-10"
@@ -278,12 +277,10 @@ export default function DynamicComponent() {
                 );
               })}
           </div>
-        </section>
-      </div>
-
       <section className="absolute top-0 right-0 m-2">
         <MyVideo ref={myVideoRef} myName={myName} />
       </section>
+      </div>
     </>
   );
 }
