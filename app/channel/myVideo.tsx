@@ -10,10 +10,10 @@ type MyVideoProps = {
 };
 
 const MyVideo = forwardRef<HTMLElement, MyVideoProps>((props, ref) => {
-
+  const CANVAS_SIZE = { width: 300, height: 200 };
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLVideoElement>(null);
-  const [myVoicePitch, setMyVoicePitch] = useRecoilState(myVoicePitchState);
+  // const [myVoicePitch, setMyVoicePitch] = useRecoilState(myVoicePitchState);
   const [isMyVoiceCheckEnable, setIsMyVoiceCheckEnable] = useRecoilState(isMyVoiceCheckEnableState);
   const [_isVideoInputReady, setIsVideoInputReady] = useRecoilState(isVideoInputReadyState);
   const [_isAudioInputReady, setIsAudioInputReady] = useRecoilState(isAudioInputReadyState);
@@ -25,8 +25,8 @@ const MyVideo = forwardRef<HTMLElement, MyVideoProps>((props, ref) => {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: {
-          width:300,
-          height:200
+          width:CANVAS_SIZE.width,
+          height:CANVAS_SIZE.height
         }
       });
       videoRef.current!.srcObject = new MediaStream(
@@ -72,7 +72,7 @@ const MyVideo = forwardRef<HTMLElement, MyVideoProps>((props, ref) => {
           max="20"
           step="0.5"
           className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 mb-3"
-          defaultValue={myVoicePitch}
+          // defaultValue={myVoicePitch}
         />
         <div className="flex items-center">
           <input id="checked-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500focus:ring-2" checked={isMyVoiceCheckEnable} onChange={() => setIsMyVoiceCheckEnable(!isMyVoiceCheckEnable)} />

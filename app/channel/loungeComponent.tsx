@@ -15,7 +15,7 @@ import {
   RemoteMember,
   LocalAudioStream,
 } from "@skyway-sdk/core";
-// import { faker } from '@faker-js/faker/locale/ja';
+import { faker } from '@faker-js/faker/locale/ja';
 import { useRecoilState } from "recoil";
 import {
   skywayTokenState,
@@ -48,7 +48,7 @@ export default function DynamicComponent() {
   let mememe: LocalPerson;
 
   useLayoutEffect(() => {
-    setMyName("faker.person.lastName()");
+    setMyName(faker.person.lastName());
     if (!validSkywayToken(skywayJwtForToken)) {
       setSkywayToken("");
       setSkywayJwtForToken("");
@@ -90,7 +90,7 @@ export default function DynamicComponent() {
     if (!myChannel) {
       return;
     }
-    myChannel.members.forEach((remoteMember: RemoteMember) => {
+    myChannel.members.filter((remoteMember: RemoteMember) => {
       if (remoteMember.id == mememe.id) {
         return;
       }
@@ -182,7 +182,7 @@ export default function DynamicComponent() {
       startMemberListControl();
       await publishVideoStream();
       await publishAudioStream();
-      myChannel.publications.forEach(subscribeAndAttach);
+      myChannel.publications.filter(subscribeAndAttach);
       myChannel.onStreamPublished.add((e) => subscribeAndAttach(e.publication));
       toast.success(
         `トークをお楽しみください。\nここでのあなたの名前は${myName}です！`
@@ -218,7 +218,6 @@ export default function DynamicComponent() {
             {isChannelJoined && (
               <>
                 <p className="text-gray-700 opacity-60">部屋退出時は右上のボタンから退出してください。</p>
-                <p className="text-gray-700 opacity-60 mb-10">あなた自身の映像は下に表示されないので、右上配信画面をご確認ください。</p>
               </>
             )}
             {(isChannelJoined && !memberList.length) && (
@@ -243,7 +242,6 @@ export default function DynamicComponent() {
                   }
                 >
                   {(isVideoInputReady && isAudioInputReady) ? (
-                    
                     <p className="text-white text-lg p-2">
                       チャンネルに参加する
                       <span className="block mt-1 text-sm pl-1 pb-2 text-white/80">
@@ -277,10 +275,10 @@ export default function DynamicComponent() {
                 );
               })}
           </div>
-      <section className="absolute top-0 right-0 m-2">
-        <MyVideo ref={myVideoRef} myName={myName} />
-      </section>
       </div>
+      <section className="absolute top-0 right-0 m-2">
+          <MyVideo ref={myVideoRef} myName={myName} />
+      </section>
     </>
   );
 }

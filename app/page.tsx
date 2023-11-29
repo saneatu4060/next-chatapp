@@ -54,7 +54,7 @@ export default function Home() {
     if (!skywayToken) {
       return toast.error("skywayを利用するTokenがありません");
     }
-    if(channelName=="通常"){
+    if(channelName=="俺chat"){
       setMyChannelName(channelName);
       router.push(`/channel/`);
     }

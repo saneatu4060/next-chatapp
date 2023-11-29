@@ -3,46 +3,36 @@
 
 import dynamic from "next/dynamic";
 import { useEffect } from "react";
-// import { myChannelNameState} from "@/lib/context";
-// import { useRecoilState } from "recoil";
 import { useRef, useState } from "react";
-// import { App } from "./threeComponent";
-import { OrbitControls } from "@react-three/drei";
+// import { ThreeComponent } from "./threeComponent"
 import { Canvas } from "@react-three/fiber";
 
 
 
 
+// const images = [
 
-
+//   // Back
+//   { position: [-3, 0, 3], rotation: [0, Math.PI / 8, 0]},
+//   { position: [3, 0, 3], rotation: [0, -Math.PI / 8, 0]},
+//   // Left
+//   { position: [-7.5, 0,7], rotation: [0, Math.PI / 3, 0]},
+//   // Right
+//   { position: [7.5, 0, 7], rotation: [0, -Math.PI / 3, 0]}
+// ]
 
 export default function Channel_2() {
 
 /* -----------------------------------------------------------------------------------*/
-function Sphere(props){
- const ref= useRef() 
- return(
-  <mesh
-  {...props}
-  ref={ref}>
-  <sphereGeometry args={[0.75, 64, 64]}/>
-  <meshStandardMaterial color={"red"}/>
- </mesh>
- )
+let ThreeComponent = dynamic(() => import("./threeComponent"), {
+  ssr: false,
+});
+useEffect(() =>{
+},[])
 
-}
-
-
-
-
-  return (    
-
-        <>
-        <Canvas style={{ width: "100vw", height: "100vh" }}>
-            <Sphere position={[1,1,1]}/>
-            <OrbitControls/>
-        </Canvas> 
-        <h1>channel_2です</h1>
-        </> 
-  )
+return (    
+      <>
+        {<ThreeComponent/>}
+      </> 
+)
 }
