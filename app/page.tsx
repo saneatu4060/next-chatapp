@@ -60,7 +60,7 @@ export default function Home() {
     }
     if(channelName=="提案システム"){
       setMyChannelName(channelName);
-      router.push(`/channel_2/`);
+      router.push(`/channel_3/`);
     }
 
   };
@@ -72,10 +72,10 @@ export default function Home() {
     <section >
       <div>
         <div>
-          <h1 className="text-center">
+          <p className="text-center">
             対面と同じ臨場感を得る会議システム
-          </h1>
-          {(skywayJwtForToken) && <h2 className="text-center">システム選択</h2> }
+          </p>
+          {(skywayJwtForToken) && <p className="text-center">システム選択</p> }
             <div>
               {validSkywayToken(skywayJwtForToken) ? (
                 Object.keys(CHANNEL_MAPPINGS).map((item, idx) => {

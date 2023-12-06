@@ -1,6 +1,6 @@
 "use client";
 import toast from "react-hot-toast";
-import { useState, useLayoutEffect, useRef } from "react";
+import { useEffect,useState, useLayoutEffect, useRef } from "react";
 import {
   SkyWayContext,
   SkyWayChannel,
@@ -27,10 +27,12 @@ import {
 import { CHANNEL_MAPPINGS } from "@/lib/roomInfo";
 import MyVideo from "./myVideo";
 import { validSkywayToken } from "@/lib/skyway";
-
+import { Canvas } from "@react-three/fiber";
+import { BoxGeometry } from "three";
+import { VideoTexture } from "three";
 type MemberInfo = { memberId: string; memberName: string };
 
-export default function DynamicComponent() {
+export default function LoungeComponent() {
   const [skywayToken, setSkywayToken] = useRecoilState(skywayTokenState);
   const [skywayJwtForToken, setSkywayJwtForToken] = useRecoilState(
     skywayJwtForTokenState
@@ -42,7 +44,7 @@ export default function DynamicComponent() {
   const [isChannelJoined, setIsChannelJoined] = useState(false);
   const [isChannelInitializing, setIsChannelInitializing] = useState(false);
   const [myName, setMyName] = useState("");
-  const myVideoRef = useRef<HTMLCanvasElement>(null);
+  const myVideoRef = useRef<HTMLVideoElement>(null);
   const memberListRef = useRef<HTMLDivElement>(null);
   let myChannel: Channel;
   let mememe: LocalPerson;
@@ -84,6 +86,8 @@ export default function DynamicComponent() {
         return;
     }
     stream.attach(mediaElement);
+    
+
   };
 
   const startMemberListControl = () => {
@@ -123,7 +127,7 @@ export default function DynamicComponent() {
       .item(0) as HTMLCanvasElement;
     if (avatarCanvas) {
       const myVideoInputStream: LocalVideoStream = new LocalVideoStream(
-        avatarCanvas.captureStream().getVideoTracks()[0]
+        avatarCanvas.captureStream(60).getVideoTracks()[0]
       );
       await mememe.publish(myVideoInputStream);
       toast(`映像配信が開始されました`, { icon: "🎥" });
@@ -201,18 +205,42 @@ export default function DynamicComponent() {
     }
     setIsChannelInitializing(() => false);
   };
+  interface BoxWithVideoProps{
+    position: [number, number, number];
+    // rotation: [number, number, number];
+}
+  const VideoBox =({position}:BoxWithVideoProps)=>{
+    const [texture,setTexture] = useState<VideoTexture>();
+    const video = myVideoRef.current
+    useEffect(()=>{
+      if(video){
+        const videoTexture = new VideoTexture(video);
+        setTexture(videoTexture)
+      }
+    },[video]);
+    return (
+      <mesh position={position}>
+        <boxGeometry args={[2,2,0]}/>
+        {texture&&(
+          <meshBasicMaterial map={texture}/>
+        )}
+      </mesh>
+    )
+  }
+
+
 
   return (
     <>
       <div className="container">
           <div className="flex flex-col text-center w-full mb-10">
             <div className="flex flex-col text-center w-full mb-10">
-              <h2 className="text-s text-indigo-500 tracking-widest font-medium title-font mb-1">
+              <p className="text-s text-indigo-500 tracking-widest font-medium title-font mb-1">
                 参加チャンネル名
-              </h2>
-              <h1 className="text-4xl font-medium title-font text-gray-900">
+              </p>
+              <p className="text-4xl font-medium title-font text-gray-900">
                 {myChannelName}
-              </h1>
+              </p>
             </div>
 
             {isChannelJoined && (
@@ -237,9 +265,7 @@ export default function DynamicComponent() {
                 <button
                   onClick={joinChannel}
                   className="flex mx-auto bg-green-500 border-0 px-8 focus:outline-none hover:bg-green-600 rounded disabled:bg-gray-600"
-                  disabled={
-                    isVideoInputReady && isAudioInputReady ? false : true
-                  }
+                  disabled={isVideoInputReady && isAudioInputReady ? false : true}
                 >
                   {(isVideoInputReady && isAudioInputReady) ? (
                     <p className="text-white text-lg p-2">
@@ -267,7 +293,7 @@ export default function DynamicComponent() {
                   <div
                     key={member.memberId}
                     className={`border-2 border-gray-900 rounded-lg member-${member.memberId}`}
-                  >
+                  >  
                     <p className="text-center py-2 text-lx font-bold">{member.memberName}</p>
                     <video autoPlay playsInline muted src="" className="w-full aspect-[3/2]" />
                     <audio autoPlay src="" />
