@@ -30,6 +30,8 @@ import { Canvas } from "@react-three/fiber";
 import { BoxGeometry } from "three";
 import { VideoTexture } from "three";
 import { type } from "os";
+import ScreenComponent from "./screenComponent";
+import MyVideo from "../channel/myVideo";
 type MemberInfo = {
     memberId:string;
     memberName:string
@@ -50,33 +52,34 @@ export default function MeetingRoom(){
     const memberListRef = useRef<HTMLDivElement>(null);
     let myChannel: Channel;
     let userName: LocalPerson;
-    const CANVAS_SIZE = { width: 300, height: 200 };
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const audioRef = useRef<HTMLAudioElement>(null);
-    const [_isVideoInputReady, setIsVideoInputReady] = useRecoilState(isVideoInputReadyState);
-    const [_isAudioInputReady, setIsAudioInputReady] = useRecoilState(isAudioInputReadyState);
+    const myVideoRef = useRef<HTMLCanvasElement>(null);
+    // const CANVAS_SIZE = { width: 300, height: 200 };
+    // const videoRef = useRef<HTMLVideoElement>(null);
+    // const audioRef = useRef<HTMLAudioElement>(null);
+    // const [_isVideoInputReady, setIsVideoInputReady] = useRecoilState(isVideoInputReadyState);
+    // const [_isAudioInputReady, setIsAudioInputReady] = useRecoilState(isAudioInputReadyState);
   
-    useEffect(() => {
+    // useEffect(() => {
       
-      (async () => {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: {
-            width:CANVAS_SIZE.width,
-            height:CANVAS_SIZE.height
-          }
-        });
-        videoRef.current!.srcObject = new MediaStream(
-          mediaStream.getVideoTracks()
-        );
-        setIsVideoInputReady(true);
-        audioRef.current!.srcObject = new MediaStream(
-          mediaStream.getAudioTracks()
-        );
-        setIsAudioInputReady(true);
+    //   (async () => {
+    //     const mediaStream = await navigator.mediaDevices.getUserMedia({
+    //       audio: true,
+    //       video: {
+    //         width:CANVAS_SIZE.width,
+    //         height:CANVAS_SIZE.height
+    //       }
+    //     });
+    //     videoRef.current!.srcObject = new MediaStream(
+    //       mediaStream.getVideoTracks()
+    //     );
+    //     setIsVideoInputReady(true);
+    //     audioRef.current!.srcObject = new MediaStream(
+    //       mediaStream.getAudioTracks()
+    //     );
+    //     setIsAudioInputReady(true);
         
-      })();
-    }, []);
+    //   })();
+    // }, []);
 
 
     useLayoutEffect(() => {
@@ -122,7 +125,7 @@ export default function MeetingRoom(){
 
     // --------------------------------------------------------
     const publishVideoStream = async () => {
-      const avatarCanvas = videoRef.current
+      const avatarCanvas = myVideoRef.current
         ?.getElementsByClassName("screen")
         .item(0) as HTMLCanvasElement;
       if (avatarCanvas) {
@@ -139,7 +142,7 @@ export default function MeetingRoom(){
     };
     // --------------------------------------------------------
     const publishAudioStream = async () => {
-      const myVoice = audioRef.current
+      const myVoice = myVideoRef.current
         ?.getElementsByClassName("sound")
         .item(0) as HTMLAudioElement;
       if (myVoice) {
@@ -240,10 +243,15 @@ export default function MeetingRoom(){
     // --------------------------------------------------------
     return(
         <>
-        <div>
-            <p>チャンネル名</p>
-            <p>{myChannelName}</p>
-        </div>
+        <section className={`w-[calc(100%-theme(width.canvas))]`}>
+            <div className="flex flex-col text-center w-full mb-10">
+              <h2 className="text-s text-indigo-500 tracking-widest font-medium title-font mb-1">
+                参加チャンネル名
+              </h2>
+              <h1 className="text-4xl font-medium title-font text-gray-900">
+                {myChannelName}
+              </h1>
+            </div>
         {isChannelJoined && (
             <>
               <p>部屋退出時はボタンから退出してください。</p>
@@ -257,15 +265,16 @@ export default function MeetingRoom(){
         {!isChannelJoined && (
           <button 
           onClick={joinChannel}
+          className="flex mx-auto bg-green-500 border-0 px-8 focus:outline-none hover:bg-green-550 rounded disabled:bg-gray-600"
           disabled={isVideoInputReady && isAudioInputReady ? false : true}
           >
             {(isVideoInputReady && isAudioInputReady) ? (
-                <p>
-                チャンネルに参加する
-                  <span className="block mt-1 text-sm pl-1 pb-2 ">
-                    ※映像&音声の送受信開始
-                  </span>
-                </p>
+                  <p className="text-white text-lg p-2">
+                    チャンネルに参加する
+                    <span className="block mt-1 text-sm pl-1 pb-2 text-white/80">
+                      ※映像&音声の送受信開始
+                    </span>
+                  </p>
             ):
             <span>
             カメラと音声が有効になるとチャンネル参加できます
@@ -273,7 +282,8 @@ export default function MeetingRoom(){
             }
           </button>
         )}
-        <div ref={memberListRef}>
+        <div ref={memberListRef}
+        className="grid grid-cols-2 md:grid-cols-3 gap-10">
         {memberList &&
               memberList.map((member) => {
                 return (
@@ -282,83 +292,21 @@ export default function MeetingRoom(){
                     className={`border-2 border-gray-900 rounded-lg member-${member.memberId}`}
                   >  
                     <p className="text-center py-2 text-lx font-bold">{member.memberName}</p>
-                    <video autoPlay playsInline muted src="" className="w-full aspect-[3/2]" />
+                    <video autoPlay playsInline muted src="" className="w-full aspect-[3/2] skew-y-45" />
                     <audio autoPlay src="" />
                   </div>
                 );
               })}
         </div>
-        <section ref={ref}>
-        <a href="/">
-          <div className="bg-yellow-500 rounded-lg mb-2 text-center hover:bg-yellow-200 cursor">
-            トップページに戻る
-          </div>
-        </a>
-        <div style={{ position: "relative" }}>
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="screen"
-          />
-          <audio  ref={audioRef} autoPlay src=""  className="sound" />
-        </div>  
-        </section>      
+        </section>
 
-        
+        <section className="absolute top-0 right-0 m-2">
+          <ScreenComponent ref={myVideoRef} myName={myName}/>
+        </section>
+
         </>
     );
 }
 
-// --------------------------------------------------------
-// const ScreenComponent = ()=>{
-//   const CANVAS_SIZE = { width: 300, height: 200 };
-//   const videoRef = useRef<HTMLVideoElement>(null);
-//   const audioRef = useRef<HTMLAudioElement>(null);
-//   const [_isVideoInputReady, setIsVideoInputReady] = useRecoilState(isVideoInputReadyState);
-//   const [_isAudioInputReady, setIsAudioInputReady] = useRecoilState(isAudioInputReadyState);
 
-//   useEffect(() => {
-    
-//     (async () => {
-//       const mediaStream = await navigator.mediaDevices.getUserMedia({
-//         audio: true,
-//         video: {
-//           width:CANVAS_SIZE.width,
-//           height:CANVAS_SIZE.height
-//         }
-//       });
-//       videoRef.current!.srcObject = new MediaStream(
-//         mediaStream.getVideoTracks()
-//       );
-//       setIsVideoInputReady(true);
-//       audioRef.current!.srcObject = new MediaStream(
-//         mediaStream.getAudioTracks()
-//       );
-//       setIsAudioInputReady(true);
-      
-//     })();
-//   }, []);
-
-//   return (
-//     <>
-//       <a href="/">
-//         <div className="bg-yellow-500 rounded-lg mb-2 text-center hover:bg-yellow-200 cursor">
-//           トップページに戻る
-//         </div>
-//       </a>
-//       <div style={{ position: "relative" }}>
-//         <video
-//           ref={videoRef}
-//           autoPlay
-//           playsInline
-//           muted
-//           className="screen"
-//         />
-//         <audio  ref={audioRef} autoPlay src=""  className="sound" />
-//         </div>        
-//     </>
-//   );
-// }
 
