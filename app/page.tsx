@@ -3,7 +3,7 @@
 import toast from "react-hot-toast";
 import { useRecoilState } from 'recoil'
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React from "react";
 import { ApiResponse, CustomError, MySkywayAuthInfo } from "@/lib/interface";
 import { skywayTokenState, myChannelNameState, skywayJwtForTokenState} from "@/lib/context";
 import { validSkywayToken } from "@/lib/skyway";
@@ -62,13 +62,16 @@ export default function Home() {
       setMyChannelName(channelName);
       router.push(`/channel_3/`);
     }
+    if(channelName=="three"){
+      setMyChannelName(channelName);
+      router.push(`/channel_2/`);
+    }
 
   };
 
 
 
   return (
-
     <section >
       <div>
         <div>
@@ -85,12 +88,10 @@ export default function Home() {
                       className="p-2 w-1/2"
                       onClick={goChannelPage}
                     >
-                      <span className="justify-center h-full flex items-center  bg-gray-600 border-2 p-4 rounded-lg  text-black title-font font-medium">
-                        {item}
-                      </span>
+                        <span className="justify-center h-full flex items-center  bg-gray-600 border-2 p-4 rounded-lg  text-black title-font font-medium">
+                          {item}
+                        </span>
                     </button>
-                    
-                    
                   );
                 },)
               ) : (
@@ -105,6 +106,5 @@ export default function Home() {
         </div>
       </div>
     </section>
-              
   )
 }

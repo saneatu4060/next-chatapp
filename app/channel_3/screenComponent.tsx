@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useRef, forwardRef, useState} from "react";
+
+import { useEffect, useRef, forwardRef } from "react";
 import { useRecoilState } from "recoil";
 import { isVideoInputReadyState, isAudioInputReadyState} from "@/lib/context";
-import { VideoTexture , Mesh} from "three";
-import { Canvas } from "@react-three/fiber";
+
 type ScreenProps = {
   myName: string;
 };
@@ -13,7 +13,7 @@ const ScreenComponent = forwardRef<HTMLElement, ScreenProps>((props, ref) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [_isVideoInputReady, setIsVideoInputReady] = useRecoilState(isVideoInputReadyState);
   const [_isAudioInputReady, setIsAudioInputReady] = useRecoilState(isAudioInputReadyState);
-//   const [videoTexture, setVideoTexture] = useState<VideoTexture>();
+
   useEffect(() => {
     (async () => {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -33,26 +33,7 @@ const ScreenComponent = forwardRef<HTMLElement, ScreenProps>((props, ref) => {
         setIsAudioInputReady(true);
     })();
   }, []);
-//   const screenRendering = async (mediaStream:MediaStream)=>{
-//     const videoTexture = new VideoTexture(videoRef.current!);
-//     setVideoTexture(videoTexture);
-//     videoRef.current!.srcObject = new MediaStream(
-//         mediaStream.getVideoTracks()
-//     )
-//     setIsVideoInputReady(true);
-//   }
-//   interface WebcamBoxProps {
-//     videoTexture: VideoTexture | undefined;
-//   }
-//   const WebcamBox =({videoTexture}:WebcamBoxProps)=>{
-//     const boxMeshRef = useRef<Mesh>();
-//     return(
-//         <mesh>
-//             <boxGeometry args={[1,1,1]}/>
-//             <meshBasicMaterial map={videoTexture}/>
-//         </mesh>
-//     )
-//   }
+
   return (
     <section ref={ref}>
       <a href="/">
@@ -72,16 +53,12 @@ const ScreenComponent = forwardRef<HTMLElement, ScreenProps>((props, ref) => {
           src=""
           className="screen"
         />
-        {/* <Canvas className="screen">
-            <WebcamBox videoTexture={videoTexture}/>
-        </Canvas> */}
       </div>
-      <div className="relative border-2 border-gray-700 rounded-lg p-3">
-        <h3>Voice Pitch</h3>
         <audio className="sound" ref={audioRef} autoPlay src=""  />
-      </div>
+
     </section>
   );
 });
+
 ScreenComponent.displayName = 'ScreenComponent'
 export default ScreenComponent;

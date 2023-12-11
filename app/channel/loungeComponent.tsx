@@ -221,13 +221,12 @@ export default function LoungeComponent() {
     return (
       <mesh position={position}>
         <boxGeometry args={[2,2,0]}/>
-        {texture&&(
+        {texture && (
           <meshBasicMaterial map={texture}/>
         )}
       </mesh>
     )
   }
-
 
 
   return (
@@ -288,18 +287,21 @@ export default function LoungeComponent() {
             className="grid grid-cols-2 md:grid-cols-3 gap-10"
           >
             {memberList &&
-              memberList.map((member) => {
+            memberList.map((member) => {
+
+
                 return (
                   <div
                     key={member.memberId}
                     className={`border-2 border-gray-900 rounded-lg member-${member.memberId}`}
                   >  
                     <p className="text-center py-2 text-lx font-bold">{member.memberName}</p>
-                    <video autoPlay playsInline muted src="" className="w-full aspect-[3/2]" />
+                    <video autoPlay playsInline muted src="" className="w-full aspect-[3/2] skew-y-45" />
                     <audio autoPlay src="" />
                   </div>
-                );
-              })}
+                  );
+                })
+            }
           </div>
       </div>
       <section className="absolute top-0 right-0 m-2">

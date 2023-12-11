@@ -1,62 +1,50 @@
-"use client";
+import { useRef, useState, useCallback } from "react";
+import Webcam from "react-webcam";
+// import "./styles.css";
 
-import { useRef, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { PointerLockControls } from '@react-three/drei';
-import * as THREE from 'three'
-import { BoxGeometry, DirectionalLight, Mesh, MeshPhongMaterial, PerspectiveCamera, VideoTexture, WebGLRenderer } from 'three';
-interface BoxWithVideoProps{
-    videoTexture: THREE.VideoTexture;
-    position: [number, number, number];
-    rotation: [number, number, number];
-}
-const BoxWithVideo=({videoTexture,position,rotation}:BoxWithVideoProps) => {
-  const boxRef = useRef<Mesh>(null);
-  return (
-    <mesh ref={boxRef} position={position} rotation={rotation}>
-      <boxGeometry args={[2, 1.6, 0]} />
-      <meshPhongMaterial map={videoTexture} />
-    </mesh>
-  );
+const videoConstraints = {
+  width: 720,
+  height: 360,
+  facingMode: "user",
 };
-const WebCamTexture = () => {
-  const videoTextureRef = useRef<THREE.VideoTexture>(null);
-  const boxWithVideoRef = useRef<Mesh>(null);
-  useEffect(() => {
-    (async () => {
 
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        console.log(stream); // 追加
-        const video = document.createElement('video');
-        video.srcObject = stream;
-        video.autoplay = true;
+export const Appvideo = () => {
+  const [isCaptureEnable, setCaptureEnable] = useState<boolean>(false);
+  const webcamRef = useRef<Webcam>(null);
+  const [url, setUrl] = useState<string | null>(null);
+  const capture = useCallback(() => {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (imageSrc) {
+      setUrl(imageSrc);
+    }
+  }, [webcamRef]);
 
-
-        videoTextureRef.current = new THREE.VideoTexture(video);
-        videoTextureRef.current.minFilter = THREE.LinearFilter;
-        if (boxWithVideoRef.current) {
-          boxWithVideoRef.current.material.map = videoTextureRef.current;
-          console.log("映像取得できています")
-        }
-
-    })()
-
-  }, [boxWithVideoRef]);
   return (
     <>
-    <video></video>
-        <Canvas style={{ width: "100vw", height: "100vh" }}>
-        <ambientLight />
-        <directionalLight position={[0, 10, 10]} intensity={1} />
-        <BoxWithVideo videoTexture={videoTextureRef.current} position={[-1, 0, 2]} rotation={[0,Math.PI/13,0]} />
-        <BoxWithVideo videoTexture={videoTextureRef.current} position={[1, 0, 2]} rotation={[0,-Math.PI/13,0]} />
-        <BoxWithVideo videoTexture={videoTextureRef.current} position={[-2.75, 0,3]} rotation={[0,Math.PI/4,0]}/>
-        <BoxWithVideo videoTexture={videoTextureRef.current} position={[2.75, 0, 3]} rotation={[0,-Math.PI/4,0]}/>
-        <PointerLockControls
-        maxPolarAngle={Math.PI/2}
-        minPolarAngle={Math.PI/1.3}/>
-        </Canvas>
+      <header>
+        <h1>カメラアプリ</h1>
+      </header>
+      {isCaptureEnable || (
+        <button onClick={() => setCaptureEnable(true)}>開始</button>
+      )}
+      {isCaptureEnable && (
+        <>
+          <div>
+            <button onClick={() => setCaptureEnable(false)}>終了</button>
+          </div>
+          <div>
+            <Webcam
+              audio={false}
+              width={540}
+              height={360}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              videoConstraints={videoConstraints}
+            />
+          </div>
+          <button onClick={capture}>キャプチャ</button>
+        </>
+      )}
     </>
   );
 };
-export default WebCamTexture;
