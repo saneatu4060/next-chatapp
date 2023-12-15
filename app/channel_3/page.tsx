@@ -15,7 +15,6 @@ useEffect(() =>{
 
 return (    
       <>
-      {/* <h1>チャンネル3です</h1> */}
         <MeetingRoom/>
       </> 
  )

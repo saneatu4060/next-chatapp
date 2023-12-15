@@ -5,6 +5,7 @@ import { useRecoilState } from "recoil";
 import { isVideoInputReadyState, isAudioInputReadyState} from "@/lib/context";
 import { VideoTexture } from "three";
 import { Canvas } from "@react-three/fiber";
+import { PointerLockControls } from "@react-three/drei";
 
 
 type MyVideoProps = {
@@ -41,28 +42,28 @@ const MyVideo = forwardRef<HTMLElement, MyVideoProps>((props, ref) => {
     })();
   }, []);
 
-// interface BoxWithVideoProps{
-//     position: [number, number, number];
-//     // rotation: [number, number, number];
-// }
-// const VideoBox =({position}:BoxWithVideoProps)=>{
-//   const [texture,setTexture] = useState<VideoTexture>();
-//   const video = MyVideo.current
-//   useEffect(()=>{
-//     if(video){
-//       const videoTexture = new VideoTexture(video);
-//       setTexture(videoTexture)
-//     }
-//   },[video]);
-//   return (
-//     <mesh position={position}>
-//       <boxGeometry args={[2,2,0]}/>
-//       {texture&&(
-//         <meshBasicMaterial map={texture}/>
-//       )}
-//     </mesh>
-//   )
-// }
+interface BoxWithVideoProps{
+    position: [number, number, number];
+    // rotation: [number, number, number];
+}
+const VideoBox =({position}:BoxWithVideoProps)=>{
+  const [texture,setTexture] = useState<VideoTexture>();
+  const video = videoRef.current
+  useEffect(()=>{
+    if(video){
+      const videoTexture = new VideoTexture(video);
+      setTexture(videoTexture)
+    }
+  },[video]);
+  return (
+    <mesh position={position}>
+      <boxGeometry args={[2,2,0]}/>
+      {texture&&(
+        <meshBasicMaterial map={texture}/>
+      )}
+    </mesh>
+  )
+}
 
 
 
@@ -86,11 +87,10 @@ const MyVideo = forwardRef<HTMLElement, MyVideoProps>((props, ref) => {
           src=""
           className=" w-canvas h-canvas"
         />
-        {/* <Canvas style={{ width: "10vw", height: "10vh" }}>
+        <Canvas style={{ width: "10vw", height: "10vh" }}>
+          <PointerLockControls/>
           <VideoBox position={[2,0,0]}/>
-          <VideoBox position={[-2,0,0]}/>
-          <VideoBox position={[0,0,0]}/>
-        </Canvas> */}
+        </Canvas>
       </div>
       <div className="relative border-2 border-gray-700 rounded-lg p-3">
         <h3>Voice Pitch</h3>

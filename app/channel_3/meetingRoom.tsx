@@ -54,34 +54,6 @@ export default function MeetingRoom(){
     let myChannel: Channel;
     let userName: LocalPerson;
     const myVideoRef = useRef<HTMLCanvasElement>(null);
-    // const CANVAS_SIZE = { width: 300, height: 200 };
-    // const videoRef = useRef<HTMLVideoElement>(null);
-    // const audioRef = useRef<HTMLAudioElement>(null);
-    // const [_isVideoInputReady, setIsVideoInputReady] = useRecoilState(isVideoInputReadyState);
-    // const [_isAudioInputReady, setIsAudioInputReady] = useRecoilState(isAudioInputReadyState);
-  
-    // useEffect(() => {
-      
-    //   (async () => {
-    //     const mediaStream = await navigator.mediaDevices.getUserMedia({
-    //       audio: true,
-    //       video: {
-    //         width:CANVAS_SIZE.width,
-    //         height:CANVAS_SIZE.height
-    //       }
-    //     });
-    //     videoRef.current!.srcObject = new MediaStream(
-    //       mediaStream.getVideoTracks()
-    //     );
-    //     setIsVideoInputReady(true);
-    //     audioRef.current!.srcObject = new MediaStream(
-    //       mediaStream.getAudioTracks()
-    //     );
-    //     setIsAudioInputReady(true);
-        
-    //   })();
-    // }, []);
-
 
     useLayoutEffect(() => {
         setMyName(faker.person.lastName());
@@ -241,21 +213,6 @@ export default function MeetingRoom(){
       setIsChannelInitializing(() => false);
     };
 
-    // const ScreenMaterial = (props,ref) =>{
-    //   memberList.map((member) => {
-    //     return (
-    //       <div
-    //       id="videoPreview"
-    //         key={member.memberId}
-    //         className={`border-2 border-gray-900 rounded-lg member-${member.memberId}`}
-    //       >  
-    //         <p className="text-center py-2 text-lx font-bold">{member.memberName}</p>
-    //         <video autoPlay playsInline muted src="" className="w-full aspect-[3/2] skew-y-45" />
-    //         <audio autoPlay src="" />
-    //       </div>
-    //     );
-    //   })
-    // }
 
     // --------------------------------------------------------
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -308,8 +265,9 @@ export default function MeetingRoom(){
           </button>
         )}
         <div 
-        ref={memberListRef}
-        className="grid grid-cols-2 md:grid-cols-3 gap-10">
+          ref={memberListRef}
+          className="grid grid-cols-2 md:grid-cols-3 gap-10"
+        >
           {memberList &&
           memberList.map((member) => {
               return (
@@ -319,13 +277,7 @@ export default function MeetingRoom(){
                 >  
                   <p className="text-center py-2 text-lx font-bold">{member.memberName}</p>
                   <video autoPlay playsInline muted src="" className="w-full aspect-[3/2] skew-y-45" />
-                  <Canvas>
-                  <boxGeometry args={[1,1,1]}/>
-                  </Canvas>
-
                   <audio autoPlay src="" />
-
-
                 </div>
                 );
               })
