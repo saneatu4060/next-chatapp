@@ -28,8 +28,10 @@ import { CHANNEL_MAPPINGS } from "@/lib/roomInfo";
 import MyVideo from "./myVideo";
 import { validSkywayToken } from "@/lib/skyway";
 import { Canvas } from "@react-three/fiber";
-import { BoxGeometry } from "three";
 import { VideoTexture } from "three";
+import { PointerLockControls } from "@react-three/drei";
+import { extend } from "@react-three/fiber";
+extend ({PointerLockControls})
 type MemberInfo = { memberId: string; memberName: string };
 
 export default function LoungeComponent() {
@@ -45,9 +47,10 @@ export default function LoungeComponent() {
   const [isChannelInitializing, setIsChannelInitializing] = useState(false);
   const [myName, setMyName] = useState("");
   const myVideoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const memberListRef = useRef<HTMLDivElement>(null);
   let myChannel: Channel;
-  let mememe: LocalPerson;
+  let userName: LocalPerson;
 
   useLayoutEffect(() => {
     setMyName(faker.person.lastName());
@@ -56,14 +59,15 @@ export default function LoungeComponent() {
       setSkywayJwtForToken("");
       location.href = "/";
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const subscribeAndAttach = async (publication: Publication) => {
     if (!myChannel) {
       return;
     }
-    if (publication.publisher.id === mememe.id) return;
-    const { stream } = await mememe.subscribe<
+    if (publication.publisher.id === userName.id) return;
+    const { stream } = await userName.subscribe<
       RemoteAudioStream | RemoteVideoStream
     >(publication.id);
 
@@ -95,7 +99,7 @@ export default function LoungeComponent() {
       return;
     }
     myChannel.members.filter((remoteMember: RemoteMember) => {
-      if (remoteMember.id == mememe.id) {
+      if (remoteMember.id == userName.id) {
         return;
       }
       setMemberList((prev) => [
@@ -129,7 +133,7 @@ export default function LoungeComponent() {
       const myVideoInputStream: LocalVideoStream = new LocalVideoStream(
         avatarCanvas.captureStream(60).getVideoTracks()[0]
       );
-      await mememe.publish(myVideoInputStream);
+      await userName.publish(myVideoInputStream);
       toast(`映像配信が開始されました`, { icon: "🎥" });
     } else {
       toast.error(
@@ -149,7 +153,7 @@ export default function LoungeComponent() {
           noiseSuppression: true,
         }
       );
-      await mememe.publish(myAudioInputStream);
+      await userName.publish(myAudioInputStream);
       toast(`音声配信が開始されました`, { icon: "🎤" });
     } else {
       toast.error(
@@ -178,7 +182,7 @@ export default function LoungeComponent() {
         name: CHANNEL_MAPPINGS[myChannelName],
         metadata: myChannelName,
       });
-      mememe = await myChannel.join({
+      userName = await myChannel.join({
         metadata: myName,
       });
       setIsChannelJoined(() => true);
@@ -207,25 +211,29 @@ export default function LoungeComponent() {
   };
   interface BoxWithVideoProps{
     position: [number, number, number];
-    // rotation: [number, number, number];
+    member:MemberInfo[]
 }
-  const VideoBox =({position}:BoxWithVideoProps)=>{
+  const VideoBox =({position,member}:BoxWithVideoProps)=>{
     const [texture,setTexture] = useState<VideoTexture>();
-    const video = myVideoRef.current
+    const video = videoRef.current
     useEffect(()=>{
       if(video){
         const videoTexture = new VideoTexture(video);
         setTexture(videoTexture)
       }
     },[video]);
+   
     return (
+
       <mesh position={position}>
         <boxGeometry args={[2,2,0]}/>
         {texture && (
           <meshBasicMaterial map={texture}/>
         )}
       </mesh>
+
     )
+
   }
 
 
@@ -282,27 +290,43 @@ export default function LoungeComponent() {
               </div>
             )}
           </div>
-          <div
+          <div id="canvasPreview">
+            <p>canvas preview</p>
+            <Canvas style={{ width: "100vw", height: "100vh" }}>
+                        <PointerLockControls 
+                          maxPolarAngle={Math.PI/2} 
+                          minPolarAngle={Math.PI/1.3}
+                        />
+                        <VideoBox position={[4,0,0]} member={memberList}/>
+
+            </Canvas>
+          </div>
+          <div 
             ref={memberListRef}
             className="grid grid-cols-2 md:grid-cols-3 gap-10"
           >
             {memberList &&
             memberList.map((member) => {
 
+              {console.log("memberList[0]の情報",memberList[0])}
+              {console.log("memberの情報",member)}
 
                 return (
-                  <div
-                    key={member.memberId}
-                    className={`border-2 border-gray-900 rounded-lg member-${member.memberId}`}
-                  >  
-                    <p className="text-center py-2 text-lx font-bold">{member.memberName}</p>
-                    <video autoPlay playsInline muted src="" className="w-full aspect-[3/2] skew-y-45" />
+                    <div
+                      key={member.memberId}
+                      className={`member-${member.memberId}`}
+                    >
+                      <p className="text-center py-2 text-lx font-bold">{member.memberName}</p>
+                    
+                    <video  ref={videoRef} autoPlay playsInline muted src="" className="w-full aspect-[3/2] " style={{width:0,height:0}} />
                     <audio autoPlay src="" />
+
                   </div>
                   );
                 })
             }
           </div>
+
       </div>
       <section className="absolute top-0 right-0 m-2">
           <MyVideo ref={myVideoRef} myName={myName} />

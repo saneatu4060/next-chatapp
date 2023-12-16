@@ -276,7 +276,7 @@ export default function MeetingRoom(){
                   className={` member-${member.memberId}`}
                 >  
                   <p className="text-center py-2 text-lx font-bold">{member.memberName}</p>
-                  <video autoPlay playsInline muted src="" className="w-full aspect-[3/2] skew-y-45" />
+                  <video autoPlay playsInline muted src="" className="w-full aspect-[3/2] " />
                   <audio autoPlay src="" />
                 </div>
                 );

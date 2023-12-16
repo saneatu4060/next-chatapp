@@ -62,10 +62,6 @@ export default function Home() {
       setMyChannelName(channelName);
       router.push(`/channel_3/`);
     }
-    if(channelName=="three"){
-      setMyChannelName(channelName);
-      router.push(`/channel_2/`);
-    }
 
   };
 
