@@ -88,15 +88,10 @@ const MyVideo = forwardRef<HTMLElement, MyVideoProps>((props, ref) => {
           src=""
           className=" w-canvas h-canvas"
         />
-        {/* <Canvas style={{ width: "10vw", height: "10vh" }}>
-          <PointerLockControls/>
-          <VideoBox position={[2,0,0]}/>
-        </Canvas> */}
-      </div>
-      <div className="relative border-2 border-gray-700 rounded-lg p-3">
-        <h3>Voice Pitch</h3>
         <audio className="refMyVoice" ref={audioRef} autoPlay src=""   />
       </div>
+        
+
     </section>
   );
 });

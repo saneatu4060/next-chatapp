@@ -49,6 +49,7 @@ export default function LoungeComponent() {
   const myVideoRef = useRef<HTMLVideoElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const memberListRef = useRef<HTMLDivElement>(null);
+  const memberRef = useRef<HTMLDivElement>(null);
   let myChannel: Channel;
   let userName: LocalPerson;
 
@@ -211,29 +212,35 @@ export default function LoungeComponent() {
   };
   interface BoxWithVideoProps{
     position: [number, number, number];
-    member:MemberInfo[]
+    member:MemberInfo
 }
   const VideoBox =({position,member}:BoxWithVideoProps)=>{
     const [texture,setTexture] = useState<VideoTexture>();
-    const video = videoRef.current
+    const memberDiv = memberListRef.current
+    ?.getElementsByClassName(`member-${member.memberId}`)
+    .item(0) as HTMLDivElement;
+    const videocontainer = memberDiv.getElementsByTagName("video").item(0)
+
+    // const video = videoRef.current
+    const video = videocontainer
     useEffect(()=>{
-      if(video){
+      if(video && memberDiv){
         const videoTexture = new VideoTexture(video);
         setTexture(videoTexture)
       }
-    },[video]);
-   
+    },[video])
+
+    
     return (
 
-      <mesh position={position}>
-        <boxGeometry args={[2,2,0]}/>
-        {texture && (
-          <meshBasicMaterial map={texture}/>
-        )}
-      </mesh>
-
-    )
-
+        <mesh position={position}>
+          
+          <boxGeometry  args={[2,2,0]}/>
+          {texture && (
+            <meshBasicMaterial map={texture}/>
+          )}
+        </mesh>                 
+      );
   }
 
 
@@ -290,17 +297,9 @@ export default function LoungeComponent() {
               </div>
             )}
           </div>
-          <div id="canvasPreview">
-            <p>canvas preview</p>
-            <Canvas style={{ width: "100vw", height: "100vh" }}>
-                        <PointerLockControls 
-                          maxPolarAngle={Math.PI/2} 
-                          minPolarAngle={Math.PI/1.3}
-                        />
-                        <VideoBox position={[4,0,0]} member={memberList}/>
 
-            </Canvas>
-          </div>
+
+          
           <div 
             ref={memberListRef}
             className="grid grid-cols-2 md:grid-cols-3 gap-10"
@@ -308,24 +307,29 @@ export default function LoungeComponent() {
             {memberList &&
             memberList.map((member) => {
 
-              {console.log("memberList[0]の情報",memberList[0])}
-              {console.log("memberの情報",member)}
-
                 return (
-                    <div
-                      key={member.memberId}
-                      className={`member-${member.memberId}`}
-                    >
-                      <p className="text-center py-2 text-lx font-bold">{member.memberName}</p>
-                    
-                    <video  ref={videoRef} autoPlay playsInline muted src="" className="w-full aspect-[3/2] " style={{width:0,height:0}} />
+                  <div
+                    ref={memberRef}
+                    key={member.memberId}
+                    className={`member-${member.memberId}`}
+                  >
+                    <video  ref={videoRef} autoPlay playsInline muted src=""  style={{width:0,height:0}} />
                     <audio autoPlay src="" />
-
                   </div>
                   );
                 })
             }
           </div>
+          <Canvas style={{ width: "100vw", height: "100vh" }} >
+            <PointerLockControls 
+              maxPolarAngle={Math.PI/2} 
+              minPolarAngle={Math.PI/1.3}
+            />
+            <VideoBox position={[-4,0,0]} member={memberList[0]}/>
+            <VideoBox position={[-1,0,0]} member={memberList[1]}/>
+            <VideoBox position={[1,0,0]} member={memberList[2]}/>
+            <VideoBox position={[4,0,0]} member={memberList[3]}/>
+          </Canvas>
 
       </div>
       <section className="absolute top-0 right-0 m-2">
