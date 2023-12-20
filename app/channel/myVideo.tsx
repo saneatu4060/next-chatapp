@@ -43,31 +43,6 @@ const MyVideo = forwardRef<HTMLElement, MyVideoProps>((props, ref) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-// interface BoxWithVideoProps{
-//     position: [number, number, number];
-//     // rotation: [number, number, number];
-// }
-// const VideoBox =({position}:BoxWithVideoProps)=>{
-//   const [texture,setTexture] = useState<VideoTexture>();
-//   const video = videoRef.current
-//   useEffect(()=>{
-//     if(video){
-//       const videoTexture = new VideoTexture(video);
-//       setTexture(videoTexture)
-//     }
-//   },[video]);
-//   return (
-//     <mesh position={position}>
-//       <boxGeometry args={[2,2,0]}/>
-//       {texture&&(
-//         <meshBasicMaterial map={texture}/>
-//       )}
-//     </mesh>
-//   )
-// }
-
-
-
 
   return (
     <section ref={ref}>

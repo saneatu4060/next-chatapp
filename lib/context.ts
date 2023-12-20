@@ -33,23 +33,10 @@ export const isAudioInputReadyState = atom({
 
 
 
+
+
   
-  export const isLiveStreamingState = atom({
-    key: 'isLiveStreaming',
-    default: false,
-  });
-  
-  export const myVoicePitchState = atom({
-    key: 'myVoicePitch',
-    default: -6,
-    effects_UNSTABLE: [persistAtom],
-  });
-  
-  export const isMyVoiceCheckEnableState = atom({
-    key: 'isMyVoiceCheckEnable',
-    default: true,
-    effects_UNSTABLE: [persistAtom],
-  });
+
 
 
 

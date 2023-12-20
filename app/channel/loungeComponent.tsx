@@ -31,9 +31,9 @@ import { Canvas } from "@react-three/fiber";
 import { VideoTexture } from "three";
 import { PointerLockControls } from "@react-three/drei";
 import { extend } from "@react-three/fiber";
+
 extend ({PointerLockControls})
 type MemberInfo = { memberId: string; memberName: string };
-
 export default function LoungeComponent() {
   const [skywayToken, setSkywayToken] = useRecoilState(skywayTokenState);
   const [skywayJwtForToken, setSkywayJwtForToken] = useRecoilState(
@@ -50,8 +50,14 @@ export default function LoungeComponent() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const memberListRef = useRef<HTMLDivElement>(null);
   const memberRef = useRef<HTMLDivElement>(null);
+  const memberNameList:string[] =[]
+  interface BoxWithVideoProps{
+    position: [number, number, number];
+    member:string
+  }
   let myChannel: Channel;
   let userName: LocalPerson;
+
 
   useLayoutEffect(() => {
     setMyName(faker.person.lastName());
@@ -71,7 +77,6 @@ export default function LoungeComponent() {
     const { stream } = await userName.subscribe<
       RemoteAudioStream | RemoteVideoStream
     >(publication.id);
-
     let mediaElement;
     const memberDiv = memberListRef.current
       ?.getElementsByClassName(`member-${publication.publisher.id}`)
@@ -91,10 +96,7 @@ export default function LoungeComponent() {
         return;
     }
     stream.attach(mediaElement);
-    
-
   };
-
   const startMemberListControl = () => {
     if (!myChannel) {
       return;
@@ -108,14 +110,12 @@ export default function LoungeComponent() {
         { memberId: remoteMember.id, memberName: remoteMember.metadata || "" },
       ]);
     });
-
     myChannel.onMemberJoined.add((event: MemberJoinedEvent) => {
-      
       setMemberList((prev) => [
         ...prev,
         { memberId: event.member.id, memberName: event.member.metadata || "" },
       ]);
-      toast(`${event.member.metadata}さんが参加しました`, { icon: "👏" });
+      toast(`${event.member.metadata}さんが参加しました`, { icon: "👏"  });
     });
     myChannel.onMemberLeft.add((event: MemberLeftEvent) => {
       console.log(event);
@@ -125,7 +125,6 @@ export default function LoungeComponent() {
       toast(`${event.member.metadata}さんが退出しました`, { icon: "💨" });
     });
   };
-
   const publishVideoStream = async () => {
     const avatarCanvas = myVideoRef.current
       ?.getElementsByClassName("w-canvas h-canvas")
@@ -135,7 +134,7 @@ export default function LoungeComponent() {
         avatarCanvas.captureStream(60).getVideoTracks()[0]
       );
       await userName.publish(myVideoInputStream);
-      toast(`映像配信が開始されました`, { icon: "🎥" });
+      toast(`映像配信が開始されました`, { icon: "🎥"  });
     } else {
       toast.error(
         "映像初期化に何かしらエラーが発生しました。\nページを更新等してお試しください。"
@@ -162,7 +161,6 @@ export default function LoungeComponent() {
       );
     }
   };
-
   const joinChannel = async () => {
     if (!Object.keys(CHANNEL_MAPPINGS).includes(myChannelName)) {
       return toast.error("不正チャンネル名です");
@@ -173,12 +171,9 @@ export default function LoungeComponent() {
     if (isChannelInitializing) {
       return toast.error("現在チャンネル初期化中です\nこのままお待ち下さい");
     }
-
     setIsChannelInitializing(() => true);
-
     try {
       const context = await SkyWayContext.Create(skywayToken);
-
       myChannel = await SkyWayChannel.FindOrCreate(context, {
         name: CHANNEL_MAPPINGS[myChannelName],
         metadata: myChannelName,
@@ -187,7 +182,6 @@ export default function LoungeComponent() {
         metadata: myName,
       });
       setIsChannelJoined(() => true);
-
       startMemberListControl();
       await publishVideoStream();
       await publishAudioStream();
@@ -201,7 +195,6 @@ export default function LoungeComponent() {
         "チャンネル初期化時にエラーが発生しました。\n3秒後に内部トークンを初期化してトップページへ遷移します。"
       );
       console.log(e);
-
       setTimeout(() => {
         setSkywayToken("");
         setSkywayJwtForToken("");
@@ -210,42 +203,78 @@ export default function LoungeComponent() {
     }
     setIsChannelInitializing(() => false);
   };
-  interface BoxWithVideoProps{
-    position: [number, number, number];
-    member:MemberInfo
-}
-  const VideoBox =({position,member}:BoxWithVideoProps)=>{
-    const [texture,setTexture] = useState<VideoTexture>();
-    const memberDiv = memberListRef.current
-    ?.getElementsByClassName(`member-${member.memberId}`)
-    .item(0) as HTMLDivElement;
-    const videocontainer = memberDiv.getElementsByTagName("video").item(0)
 
-    // const video = videoRef.current
-    const video = videocontainer
+
+  const VideoBox =({position,member}:BoxWithVideoProps )=>{
+    const [texture,setTexture] = useState<VideoTexture>();
+    const video = document.getElementsByClassName(member).item(0) as HTMLVideoElement
+    // const videoContainer = video
+    const videoContainer =videoRef.current
     useEffect(()=>{
-      if(video && memberDiv){
-        const videoTexture = new VideoTexture(video);
+      if(videoContainer ){
+        const videoTexture = new VideoTexture(videoContainer);
         setTexture(videoTexture)
       }
-    },[video])
-
-    
+    },[])
     return (
-
-        <mesh position={position}>
-          
-          <boxGeometry  args={[2,2,0]}/>
-          {texture && (
-            <meshBasicMaterial map={texture}/>
-          )}
-        </mesh>                 
-      );
+      <mesh position={position}>
+        <boxGeometry  args={[2,2,0]}/>
+        {texture && (
+          <meshBasicMaterial map={texture}/>
+        )}
+      </mesh>
+    );
   }
 
 
+
+  const VideoComponent  = () =>{
+    return(
+      <>
+      <div
+        ref={memberListRef}
+        className="grid grid-cols-2 md:grid-cols-3 gap-10"
+      >
+        {memberList &&
+          memberList.map((member) => {
+            memberNameList.push(member.memberName)
+            return(
+                  <div
+                    ref={memberRef}
+                    key={member.memberId}
+                    className={`member-${member.memberId}`}
+                  >
+                    <video  ref={videoRef} autoPlay playsInline muted src="" className={`${member.memberName}`} style={{width:0,height:0}} />
+                    <audio autoPlay src="" />
+                  </div>
+              )
+            })
+        }
+      </div>
+      <p>{memberNameList[0]}{memberNameList.indexOf(memberNameList[0])}</p>
+      <p>{memberNameList[1]}{memberNameList.indexOf(memberNameList[1])}</p>
+      <p>{memberNameList[2]}{memberNameList.indexOf(memberNameList[2])}</p>
+      <p>{memberNameList[3]}{memberNameList.indexOf(memberNameList[3])}</p>
+      {console.log(memberNameList)}
+      {console.log(memberList)}
+          <Canvas style={{ width: "100vw", height: "100vh" }} >
+            {/* <PointerLockControls
+              maxPolarAngle={Math.PI/2}
+              minPolarAngle={Math.PI/1.3}
+            /> */}
+            
+             <VideoBox position={[-4,0,0]}  member={memberNameList[0]}/>
+             <VideoBox position={[-1.5,0,0]}  member={memberNameList[1]}/>
+             <VideoBox position={[1.5,0,0]}  member={memberNameList[2]}/>
+             <VideoBox position={[4,0,0]}  member={memberNameList[3]}/>
+          </Canvas>
+      </>
+
+    )
+  }
   return (
     <>
+    <section className={`w-[calc(100%-theme(width.canvas))]`}>
       <div className="container">
           <div className="flex flex-col text-center w-full mb-10">
             <div className="flex flex-col text-center w-full mb-10">
@@ -256,7 +285,6 @@ export default function LoungeComponent() {
                 {myChannelName}
               </p>
             </div>
-
             {isChannelJoined && (
               <>
                 <p className="text-gray-700 opacity-60">部屋退出時は右上のボタンから退出してください。</p>
@@ -297,41 +325,10 @@ export default function LoungeComponent() {
               </div>
             )}
           </div>
-
-
-          
-          <div 
-            ref={memberListRef}
-            className="grid grid-cols-2 md:grid-cols-3 gap-10"
-          >
-            {memberList &&
-            memberList.map((member) => {
-
-                return (
-                  <div
-                    ref={memberRef}
-                    key={member.memberId}
-                    className={`member-${member.memberId}`}
-                  >
-                    <video  ref={videoRef} autoPlay playsInline muted src=""  style={{width:0,height:0}} />
-                    <audio autoPlay src="" />
-                  </div>
-                  );
-                })
-            }
-          </div>
-          <Canvas style={{ width: "100vw", height: "100vh" }} >
-            <PointerLockControls 
-              maxPolarAngle={Math.PI/2} 
-              minPolarAngle={Math.PI/1.3}
-            />
-            <VideoBox position={[-4,0,0]} member={memberList[0]}/>
-            <VideoBox position={[-1,0,0]} member={memberList[1]}/>
-            <VideoBox position={[1,0,0]} member={memberList[2]}/>
-            <VideoBox position={[4,0,0]} member={memberList[3]}/>
-          </Canvas>
+          <VideoComponent/>
 
       </div>
+      </section>
       <section className="absolute top-0 right-0 m-2">
           <MyVideo ref={myVideoRef} myName={myName} />
       </section>
