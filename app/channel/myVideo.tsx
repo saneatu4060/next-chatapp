@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useRef, forwardRef, useState} from "react";
+import { useEffect, useRef, forwardRef} from "react";
 import { useRecoilState } from "recoil";
 import { isVideoInputReadyState, isAudioInputReadyState} from "@/lib/context";
-import { VideoTexture } from "three";
-import { Canvas } from "@react-three/fiber";
-import { PointerLockControls } from "@react-three/drei";
+
 
 
 type MyVideoProps = {

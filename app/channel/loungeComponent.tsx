@@ -1,6 +1,6 @@
 "use client";
 import toast from "react-hot-toast";
-import { useEffect,useState, useLayoutEffect, useRef } from "react";
+import { useEffect,useState, useLayoutEffect, useRef, ReactNode } from "react";
 import {
   SkyWayContext,
   SkyWayChannel,
@@ -47,7 +47,7 @@ export default function LoungeComponent() {
   const [isChannelInitializing, setIsChannelInitializing] = useState(false);
   const [myName, setMyName] = useState("");
   const myVideoRef = useRef<HTMLVideoElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  // const videoRef = useRef<HTMLVideoElement>(null);
   const memberListRef = useRef<HTMLDivElement>(null);
   const memberRef = useRef<HTMLDivElement>(null);
   const memberNameList:string[] =[]
@@ -205,17 +205,21 @@ export default function LoungeComponent() {
   };
 
 
+
   const VideoBox =({position,member}:BoxWithVideoProps )=>{
     const [texture,setTexture] = useState<VideoTexture>();
     const video = document.getElementsByClassName(member).item(0) as HTMLVideoElement
-    // const videoContainer = video
-    const videoContainer =videoRef.current
+    const videoContainer = video
+    
     useEffect(()=>{
+      
       if(videoContainer ){
         const videoTexture = new VideoTexture(videoContainer);
         setTexture(videoTexture)
       }
-    },[])
+
+    },[videoContainer])
+
     return (
       <mesh position={position}>
         <boxGeometry  args={[2,2,0]}/>
@@ -227,13 +231,11 @@ export default function LoungeComponent() {
   }
 
 
-
   const VideoComponent  = () =>{
     return(
       <>
       <div
         ref={memberListRef}
-        className="grid grid-cols-2 md:grid-cols-3 gap-10"
       >
         {memberList &&
           memberList.map((member) => {
@@ -244,32 +246,30 @@ export default function LoungeComponent() {
                     key={member.memberId}
                     className={`member-${member.memberId}`}
                   >
-                    <video  ref={videoRef} autoPlay playsInline muted src="" className={`${member.memberName}`} style={{width:0,height:0}} />
+                    <video autoPlay playsInline muted src="" className={`${member.memberName}`} style={{width:0,height:0}} />
                     <audio autoPlay src="" />
                   </div>
               )
             })
         }
       </div>
-      <p>{memberNameList[0]}{memberNameList.indexOf(memberNameList[0])}</p>
-      <p>{memberNameList[1]}{memberNameList.indexOf(memberNameList[1])}</p>
-      <p>{memberNameList[2]}{memberNameList.indexOf(memberNameList[2])}</p>
-      <p>{memberNameList[3]}{memberNameList.indexOf(memberNameList[3])}</p>
       {console.log(memberNameList)}
-      {console.log(memberList)}
-          <Canvas style={{ width: "100vw", height: "100vh" }} >
-            {/* <PointerLockControls
-              maxPolarAngle={Math.PI/2}
-              minPolarAngle={Math.PI/1.3}
-            /> */}
-            
-             <VideoBox position={[-4,0,0]}  member={memberNameList[0]}/>
-             <VideoBox position={[-1.5,0,0]}  member={memberNameList[1]}/>
-             <VideoBox position={[1.5,0,0]}  member={memberNameList[2]}/>
-             <VideoBox position={[4,0,0]}  member={memberNameList[3]}/>
-          </Canvas>
+      {console.log(memberList[0])}
+      {memberList &&
+        
+      
+      
+        <Canvas style={{ width: "100vw", height: "100vh" }} >
+          {/* <PointerLockControls
+            maxPolarAngle={Math.PI/2}
+            minPolarAngle={Math.PI/1.3}
+          /> */}
+            <VideoBox position={[-4.0,0,0]}  member={memberList[0]?.memberName}/>
+            <VideoBox position={[-1.5,0,0]}  member={memberList[1]?.memberName}/>
+            <VideoBox position={[ 1.5,0,0]}  member={memberList[2]?.memberName}/>
+            <VideoBox position={[ 4.0,0,0]}  member={memberList[3]?.memberName}/>
+        </Canvas>}
       </>
-
     )
   }
   return (
