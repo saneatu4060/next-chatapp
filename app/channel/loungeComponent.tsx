@@ -29,7 +29,11 @@ import MyVideo from "./myVideo";
 import { validSkywayToken } from "@/lib/skyway";
 import { Canvas } from "@react-three/fiber";
 import { VideoTexture } from "three";
-import { PointerLockControls } from "@react-three/drei";
+import {
+  PointerLockControls,
+  Environment,
+  useEnvironment,
+} from "@react-three/drei";
 import { extend } from "@react-three/fiber";
 
 extend({ PointerLockControls });
@@ -52,6 +56,7 @@ export default function LoungeComponent() {
   const memberRef = useRef<HTMLDivElement>(null);
   interface BoxWithVideoProps {
     position: [number, number, number];
+    rotation: [number, number, number];
     member: string;
   }
   let myChannel: Channel;
@@ -203,7 +208,7 @@ export default function LoungeComponent() {
     setIsChannelInitializing(() => false);
   };
 
-  const VideoBox = ({ position, member }: BoxWithVideoProps) => {
+  const VideoBox = ({ position, rotation, member }: BoxWithVideoProps) => {
     const [texture, setTexture] = useState<VideoTexture>();
     const video = document
       .getElementsByClassName(member)
@@ -218,13 +223,16 @@ export default function LoungeComponent() {
     }, [videoContainer]);
 
     return (
-      <mesh position={position}>
-        <boxGeometry args={[2, 2, 0]} />
+      <mesh position={position} rotation={rotation}>
+        <boxGeometry args={[2.5, 2.5, 0]} />
         {texture && <meshBasicMaterial map={texture} />}
       </mesh>
     );
   };
 
+  const envMap = useEnvironment({
+    preset: "apartment",
+  });
   return (
     <>
       <div className="container">
@@ -294,6 +302,7 @@ export default function LoungeComponent() {
                     muted
                     src=""
                     className={`${member.memberName}`}
+                    style={{ width: 0, height: 0 }}
                   />
                   <audio autoPlay src="" />
                 </div>
@@ -302,32 +311,39 @@ export default function LoungeComponent() {
         </div>
 
         {memberList && (
-          <Canvas style={{ width: "100vw", height: "100vh" }}>
+          <Canvas
+            style={{ width: "100vw", height: "100vh", position: "absolute" }}
+          >
             <PointerLockControls
               maxPolarAngle={Math.PI / 2}
               minPolarAngle={Math.PI / 1.3}
             />
+            <Environment map={envMap} background />
             <VideoBox
-              position={[-4.0, 0, 0]}
+              position={[-4.0, 0, 1]}
+              rotation={[0, Math.PI / 4, 0]}
               member={memberList[0]?.memberName}
             />
             <VideoBox
-              position={[-1.5, 0, 0]}
+              position={[-1.5, 0, -0.5]}
+              rotation={[0, Math.PI / 13, 0]}
               member={memberList[1]?.memberName}
             />
             <VideoBox
-              position={[1.5, 0, 0]}
+              position={[1.5, 0, -0.5]}
+              rotation={[0, -Math.PI / 13, 0]}
               member={memberList[2]?.memberName}
             />
             <VideoBox
-              position={[4.0, 0, 0]}
+              position={[4.0, 0, 1]}
+              rotation={[0, -Math.PI / 4, 0]}
               member={memberList[3]?.memberName}
             />
           </Canvas>
         )}
       </div>
 
-      <section className="absolute top-0 right-0 m-2">
+      <section className="absolute top-0 right-0 m-1">
         <MyVideo ref={myVideoRef} myName={myName} />
       </section>
     </>

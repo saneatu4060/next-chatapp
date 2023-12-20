@@ -57,13 +57,9 @@ export default function Home() {
     if (!skywayToken) {
       return toast.error("skywayを利用するTokenがありません");
     }
-    if (channelName == "俺chat") {
+    if (channelName == "meeting") {
       setMyChannelName(channelName);
       router.push(`/channel/`);
-    }
-    if (channelName == "提案システム") {
-      setMyChannelName(channelName);
-      router.push(`/channel_3/`);
     }
   };
 
@@ -79,12 +75,10 @@ export default function Home() {
                 return (
                   <button
                     key={idx}
-                    className="p-2 w-1/2"
+                    className="text-white bg-gray-500 border-0 py-2 px-8 focus:outline-none hover:bg-gray-600 rounded text-lg w-full"
                     onClick={goChannelPage}
                   >
-                    <span className="justify-center h-full flex items-center  bg-gray-600 border-2 p-4 rounded-lg  text-black title-font font-medium">
-                      {item}
-                    </span>
+                    {item}
                   </button>
                 );
               })

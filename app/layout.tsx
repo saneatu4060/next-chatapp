@@ -20,7 +20,7 @@ export default function RootLayout({
     <html>
       <body className={inter.className}>
         <RecoilProvider>
-          <main className="min-h-screen p-10">{children}</main>
+          <main className="w-full h-full">{children}</main>
           <Toaster />
         </RecoilProvider>
       </body>
