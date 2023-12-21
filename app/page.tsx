@@ -5,20 +5,20 @@ import { useRecoilState } from "recoil";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { ApiResponse, CustomError, MySkywayAuthInfo } from "@/lib/interface";
+import { validSkywayToken } from "@/lib/skyway";
+import { CHANNEL_MAPPINGS } from "@/lib/roomInfo";
 import {
   skywayTokenState,
   myChannelNameState,
   skywayJwtForTokenState,
 } from "@/lib/context";
-import { validSkywayToken } from "@/lib/skyway";
-import { CHANNEL_MAPPINGS } from "@/lib/roomInfo";
 
 export default function Home() {
   const [skywayToken, setSkywayToken] = useRecoilState(skywayTokenState);
+  const [_, setMyChannelName] = useRecoilState(myChannelNameState);
   const [skywayJwtForToken, setSkywayJwtForToken] = useRecoilState(
     skywayJwtForTokenState
   );
-  const [_, setMyChannelName] = useRecoilState(myChannelNameState);
   const router = useRouter();
 
   /* -----------------------------------------------------------------------------------*/

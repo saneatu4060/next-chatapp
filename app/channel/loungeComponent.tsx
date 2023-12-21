@@ -40,9 +40,6 @@ extend({ PointerLockControls });
 type MemberInfo = { memberId: string; memberName: string };
 export default function LoungeComponent() {
   const [skywayToken, setSkywayToken] = useRecoilState(skywayTokenState);
-  const [skywayJwtForToken, setSkywayJwtForToken] = useRecoilState(
-    skywayJwtForTokenState
-  );
   const [myChannelName] = useRecoilState(myChannelNameState);
   const [memberList, setMemberList] = useState<MemberInfo[]>([]);
   const [isVideoInputReady] = useRecoilState(isVideoInputReadyState);
@@ -50,6 +47,9 @@ export default function LoungeComponent() {
   const [isChannelJoined, setIsChannelJoined] = useState(false);
   const [isChannelInitializing, setIsChannelInitializing] = useState(false);
   const [myName, setMyName] = useState("");
+  const [skywayJwtForToken, setSkywayJwtForToken] = useRecoilState(
+    skywayJwtForTokenState
+  );
   const myVideoRef = useRef<HTMLVideoElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const memberListRef = useRef<HTMLDivElement>(null);
@@ -224,7 +224,7 @@ export default function LoungeComponent() {
 
     return (
       <mesh position={position} rotation={rotation}>
-        <boxGeometry args={[2.5, 2.5, 0]} />
+        <boxGeometry args={[2.75, 2.75, 0]} />
         {texture && <meshBasicMaterial map={texture} />}
       </mesh>
     );
@@ -285,7 +285,7 @@ export default function LoungeComponent() {
         </div>
         <div
           ref={memberListRef}
-          className="grid grid-cols-2 md:grid-cols-3 gap-10"
+          className="grid grid-cols-2 md:grid-cols-3 gap-10 "
         >
           {memberList &&
             memberList.map((member) => {
@@ -311,31 +311,29 @@ export default function LoungeComponent() {
         </div>
 
         {memberList && (
-          <Canvas
-            style={{ width: "100vw", height: "100vh", position: "absolute" }}
-          >
+          <Canvas style={{ width: "100vw", height: "100vh", top: "120px" }}>
             <PointerLockControls
               maxPolarAngle={Math.PI / 2}
               minPolarAngle={Math.PI / 1.3}
             />
             <Environment map={envMap} background />
             <VideoBox
-              position={[-4.0, 0, 1]}
+              position={[-4.1, 0, 1.75]}
               rotation={[0, Math.PI / 4, 0]}
               member={memberList[0]?.memberName}
             />
             <VideoBox
-              position={[-1.5, 0, -0.5]}
-              rotation={[0, Math.PI / 13, 0]}
+              position={[-1.5, 0, 0.35]}
+              rotation={[0, Math.PI / 12, 0]}
               member={memberList[1]?.memberName}
             />
             <VideoBox
-              position={[1.5, 0, -0.5]}
-              rotation={[0, -Math.PI / 13, 0]}
+              position={[1.5, 0, 0.35]}
+              rotation={[0, -Math.PI / 12, 0]}
               member={memberList[2]?.memberName}
             />
             <VideoBox
-              position={[4.0, 0, 1]}
+              position={[4.1, 0, 1.75]}
               rotation={[0, -Math.PI / 4, 0]}
               member={memberList[3]?.memberName}
             />
